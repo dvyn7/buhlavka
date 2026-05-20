@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>БУХЛАВКА — Разливное пиво</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=Geologica:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --white: #ffffff;
+    --black: #000000;
+    --amber: #FFBF00;
+    --gray1: #161616;
+    --gray2: #1e1e1e;
+    --gray3: #2a2a2a;
+    --muted: rgba(255,255,255,0.45);
+    --border: rgba(255,255,255,0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--gray1);
+    color: var(--white);
+    font-family: 'Geologica', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 60px;
+    transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(12px);
+    padding: 18px 60px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 48px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--amber); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 700px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 60px 80px;
+  }
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.4) 0%,
+      rgba(0,0,0,0.15) 25%,
+      rgba(0,0,0,0.6) 55%,
+      rgba(0,0,0,0.95) 100%
+    );
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+    animation: fadeUp 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(52px, 9vw, 120px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 28px;
+  }
+  .hero-sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 440px;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .btn-primary {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--black);
+    background: var(--white);
+    padding: 18px 40px;
+    display: inline-block;
+    transition: background 0.25s, color 0.25s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--amber); color: var(--black); transform: translateY(-2px); }
+  .btn-primary.inv {
+    color: var(--white);
+    background: var(--black);
+    border: 1px solid var(--white);
+  }
+  .btn-primary.inv:hover { background: var(--white); color: var(--black); }
+  .btn-primary.amber-hover:hover { background: var(--amber); color: var(--black); border-color: var(--amber); }
+
+  .btn-ghost {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+    opacity: 0.5;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 3px;
+    transition: opacity 0.2s;
+  }
+  .btn-ghost:hover { opacity: 1; color: var(--amber); border-color: var(--amber); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 80px;
+    right: 60px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.35;
+    animation: fadeUp 1s 1.2s both;
+  }
+  .hero-scroll span {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: var(--amber);
+    animation: scrollLine 1.8s ease-in-out infinite;
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    overflow: hidden;
+    background: var(--white);
+    padding: 14px 0;
+    white-space: nowrap;
+  }
+  .ticker-track {
+    display: inline-flex;
+    gap: 0;
+    animation: ticker 22s linear infinite;
+  }
+  .ticker-item {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    padding: 0 48px;
+  }
+  .ticker-dot {
+    font-size: 18px;
+    line-height: 1;
+    margin: 0 -16px;
+    color: var(--amber);
+  }
+
+  /* ── SECTION BASE ── */
+  section { padding: 120px 60px; }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: clamp(32px, 4vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: var(--white);
+  }
+
+  /* ── ABOUT ── */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    border-top: 0.5px solid var(--border);
+  }
+  .about-text p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .about-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 440px;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .about-visual-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(22,22,22,0.85) 0%, rgba(22,22,22,0.4) 50%, rgba(22,22,22,0.85) 100%),
+      url('https://images.unsplash.com/photo-1600785687596-7f7e7a3b2b9a?w=800&q=80') center/cover no-repeat;
+  }
+  .about-beer-types {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 40px;
+    width: 100%;
+  }
+  .beer-type-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(4px);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .beer-type-item:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--amber);
+  }
+  .beer-type-icon {
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .beer-type-label {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--white);
+    letter-spacing: 0.03em;
+  }
+  .beer-type-desc {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .about-visual-badge {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 3;
+    background: var(--amber);
+    color: var(--black);
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 48px;
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 0.5px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── MENU ── */
+  .menu-section { border-top: 0.5px solid var(--border); }
+  .menu-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 64px;
+  }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .beer-card {
+    background: var(--gray1);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: background 0.3s;
+  }
+  .beer-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .beer-card:hover { background: var(--gray2); }
+  .beer-card:hover::before { transform: scaleX(1); }
+  .beer-img {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100px;
+    height: 140px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .beer-card:hover .beer-img {
+    opacity: 0.6;
+    transform: translateY(-50%) scale(1.05);
+  }
+  .beer-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.1em;
+    margin-bottom: 28px;
+  }
+  .beer-style-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .beer-style-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+  .beer-style {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .beer-name {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .beer-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .beer-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .beer-abv { font-size: 11px; letter-spacing: 0.15em; color: var(--muted); }
+  .beer-price {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--white);
+  }
+
+  /* ── DELIVERY TRANSITION ── */
+  .delivery-transition {
+    height: 80px;
+    background: linear-gradient(to bottom, var(--gray1) 0%, #0a0a0a 40%, #1a1a1a 70%, var(--white) 100%);
+    border: none;
+  }
+
+  /* ── DELIVERY ── */
+  .delivery-section {
+    background: var(--white);
+    padding: 100px 60px;
+  }
+  .delivery-section .label { color: rgba(0,0,0,0.4); }
+  .delivery-section .section-title { color: var(--black); }
+  .delivery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .delivery-left {}
+  .delivery-left p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: rgba(0,0,0,0.6);
+    margin-bottom: 32px;
+  }
+  .delivery-hours {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--black);
+    color: var(--white);
+    padding: 20px 32px;
+    margin-bottom: 36px;
+  }
+  .delivery-hours-icon { font-size: 24px; line-height: 1; }
+  .delivery-hours-icon a { color: var(--white); text-decoration: none; }
+  .delivery-hours-text {}
+  .delivery-hours-text strong {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    display: block;
+  }
+  .delivery-hours-text span {
+    font-size: 12px;
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .delivery-steps {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+  .delivery-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .delivery-steps li:first-child { border-top: 0.5px solid rgba(0,0,0,0.08); }
+  .step-icon-wrap {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    color: var(--white);
+  }
+  .step-text {
+    font-size: 16px;
+    color: rgba(0,0,0,0.75);
+    line-height: 1.5;
+    padding-top: 10px;
+  }
+  .btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+    background: #25D366;
+    padding: 18px 36px;
+    transition: background 0.25s, transform 0.2s;
+  }
+  .btn-whatsapp:hover { background: #1da851; transform: translateY(-2px); }
+  .btn-whatsapp svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .delivery-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .delivery-big {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(60px, 8vw, 110px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(0,0,0,0.12);
+    text-align: right;
+    margin-bottom: 40px;
+    align-self: flex-end;
+  }
+  .delivery-note {
+    background: #f5f5f5;
+    border-left: 3px solid var(--black);
+    padding: 24px 28px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: rgba(0,0,0,0.65);
+    width: 100%;
+  }
+  .delivery-note strong { color: var(--black); font-weight: 400; }
+
+  /* ── REVIEWS ── */
+  .reviews-section {
+    background: var(--gray1);
+    padding: 120px 60px;
+    border-top: 0.5px solid var(--border);
+  }
+  .reviews-header {
+    margin-bottom: 64px;
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .review-card {
+    background: var(--gray2);
+    padding: 32px 28px;
+    border: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .review-card:hover {
+    background: #222;
+    border-color: var(--amber);
+  }
+  .review-stars {
+    display: flex;
+    gap: 4px;
+  }
+  .review-star {
+    width: 14px;
+    height: 14px;
+    color: var(--amber);
+  }
+  .review-text {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--muted);
+    font-style: italic;
+    flex: 1;
+  }
+  .review-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--border);
+  }
+  .review-author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gray3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+  .review-author-name {
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 400;
+  }
+  .review-source {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── WHY ── */
+  .why-section {
+    border-top: 0.5px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 100px;
+    align-items: start;
+  }
+  .why-list { list-style: none; }
+  .why-item {
+    border-bottom: 0.5px solid var(--border);
+    padding: 36px 0;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 24px;
+    align-items: start;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .why-item.visible { opacity: 1; transform: translateY(0); }
+  .why-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    padding-top: 4px;
+  }
+  .why-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .why-text { font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .why-image-block {
+    position: sticky;
+    top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .why-big-text {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(60px, 8vw, 100px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.12);
+  }
+  .why-quote {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--white);
+    font-weight: 300;
+    padding-left: 24px;
+    border-left: 2px solid rgba(255,255,255,0.3);
+    margin-top: 40px;
+  }
+
+  /* ── MAP ── */
+  .map-section {
+    border-top: 0.5px solid var(--border);
+    padding: 0;
+  }
+  .map-header {
+    padding: 80px 60px 48px;
+  }
+  .map-embed {
+    width: 100%;
+    height: 480px;
+    border: none;
+    display: block;
+
+  }
+  .map-info-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 36px 60px;
+    border-top: 0.5px solid var(--border);
+    gap: 40px;
+  }
+  .map-addr {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .map-addr strong { color: var(--white); font-weight: 400; font-size: 18px; display: block; margin-bottom: 4px; }
+  .map-open-link {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 4px;
+    white-space: nowrap;
+    transition: border-color 0.2s;
+  }
+  .map-open-link:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ── CTA ── */
+  .cta-strip {
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px 60px;
+    gap: 40px;
+  }
+  .cta-strip-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(28px, 4vw, 52px);
+    line-height: 1.05;
+    max-width: 560px;
+    color: var(--white);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--gray1);
+    padding: 72px 60px 60px;
+    border-top: 0.5px solid var(--border);
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 60px;
+    padding-bottom: 60px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .footer-logo {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    color: var(--white);
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+  .footer-tagline { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .footer-col h4 {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 24px;
+  }
+  .footer-col p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .footer-col a {
+    font-size: 18px;
+    color: var(--white);
+    line-height: 2.2;
+    text-decoration: none;
+    display: block;
+    transition: opacity 0.2s;
+    font-weight: 300;
+  }
+  .footer-col a:hover { opacity: 0.8; color: var(--amber); }
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 32px;
+  }
+  .footer-copy {
+    font-size: 12px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.05em;
+  }
+  .footer-age {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes scrollLine {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { display: none; }
+    section { padding: 72px 24px; }
+    .hero { padding: 0 24px 60px; }
+    .hero-scroll { right: 24px; }
+    .about { grid-template-columns: 1fr; gap: 48px; }
+    .about-visual { min-height: 320px; }
+    .about-beer-types { gap: 8px; padding: 24px; }
+    .beer-type-item { padding: 12px 16px; }
+    .beer-type-label { font-size: 12px; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .delivery-section { padding: 72px 24px; }
+    .delivery-grid { grid-template-columns: 1fr; gap: 48px; }
+    .reviews-section { padding: 72px 24px; }
+    .reviews-grid { grid-template-columns: 1fr; gap: 16px; }
+    .why-section { grid-template-columns: 1fr; }
+    .why-image-block { position: static; }
+    .map-header { padding: 60px 24px 36px; }
+    .map-info-strip { flex-direction: column; align-items: flex-start; padding: 28px 24px; }
+    .cta-strip { flex-direction: column; align-items: flex-start; padding: 60px 24px; }
+    footer { padding: 60px 24px 40px; }
+    .footer-top { grid-template-columns: 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; gap: 12px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">БУХЛАВКА</a>
+  <ul class="nav-links">
+    <li><a href="#about">О нас</a></li>
+    <li><a href="#menu">Краны</a></li>
+    <li><a href="#delivery">Доставка</a></li>
+    <li><a href="#map">Адрес</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">БУХЛАВКА</h1>
+    <p class="hero-sub">Живое пиво в Алматы. Свежий разлив и крафтовые сорта напрямую с пивоварен.</p>
+    <div class="hero-actions">
+      <a href="#delivery" class="btn-primary">Заказать доставку</a>
+      <a href="#menu" class="btn-ghost">Смотреть краны</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Скролл</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item">Живое пиво</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Свежий розлив</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">40+ сортов</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Доставка по Алматы</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">10:00 — 00:00</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Пивоварни напрямую</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Живое пиво</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Свежий розлив</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">40+ сортов</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Доставка по Алматы</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">10:00 — 00:00</span><span class="ticker-dot">·</span>
+    <span class="ticker-item">Пивоварни напрямую</span><span class="ticker-dot">·</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text reveal">
+    <p class="label">О магазине</p>
+    <h2 class="section-title">Настоящее пиво — без компромиссов</h2>
+    <p>Мы работаем только с проверенными пивоварнями. Никаких пастеризованных суррогатов — только живое разливное пиво с коротким сроком хранения и богатым вкусом.</p>
+    <p>Наши краны обслуживаются ежедневно. Температурный контроль на каждом этапе — от пивоварни до вашего бокала.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">40+</div>
+        <div class="stat-label">Сортов в наличии</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Пивоварен-партнёров</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5★</div>
+        <div class="stat-label">Средний рейтинг</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-visual reveal">
+    <div class="about-visual-bg"></div>
+    <div class="about-beer-types">
+      <div class="beer-type-item">
+        <span class="beer-type-icon">🍺</span>
+        <div>
+          <div class="beer-type-label">Лагер / Эль</div>
+          <div class="beer-type-desc">Классика и ароматные</div>
+        </div>
+      </div>
+      <div class="beer-type-item">
+        <span class="beer-type-icon">🍺</span>
+        <div>
+          <div class="beer-type-label">ИПА / Стаут</div>
+          <div class="beer-type-desc">Хмелевые и плотные</div>
+        </div>
+      </div>
+      <div class="beer-type-item">
+        <span class="beer-type-icon">🍺</span>
+        <div>
+          <div class="beer-type-label">Пшеничное</div>
+          <div class="beer-type-desc">Нефильтрованное</div>
+        </div>
+      </div>
+      <div class="beer-type-item">
+        <span class="beer-type-icon">🍺</span>
+        <div>
+          <div class="beer-type-label">Тёмное</div>
+          <div class="beer-type-desc">Бархатистое и богатое</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual-badge">40+ сортов</div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="menu-header reveal">
+    <div>
+      <p class="label">Наши краны</p>
+      <h2 class="section-title">Что сейчас в разливе</h2>
+    </div>
+    <a href="https://api.whatsapp.com/send/?phone=77471707717&text&type=phone_number&app_absent=0" target="_blank" class="btn-ghost">Весь ассортимент →</a>
+  </div>
+  <div class="menu-grid">
+    <div class="beer-card reveal">
+      <div class="beer-img" style="background-image:url(beer-svetlyy-lager-Photoroom.png)"></div>
+      <div class="beer-num">01</div>
+      <div class="beer-style-wrap"><svg class="beer-style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a1 1 0 0 0-1 1v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1z"/><path d="M16 4h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2"/><path d="M6 6h1"/></svg><div class="beer-style">Чешский лагер</div></div>
+      <div class="beer-name">Zlatý<br>Ječmen</div>
+      <div class="beer-desc">Классический светлый лагер с тонкой хмелевой горечью и чистым зерновым послевкусием.</div>
+      <div class="beer-meta">
+        <div class="beer-abv">ABV 4.8% · IBU 20</div>
+        <div class="beer-price">680 ₸/л</div>
+      </div>
+    </div>
+    <div class="beer-card reveal" style="transition-delay:0.1s">
+      <div class="beer-img" style="background-image:url(Gemini_Generated_Image_i5ldhxi5ldhxi5ld-Photoroom.png)"></div>
+      <div class="beer-num">02</div>
+      <div class="beer-style-wrap"><svg class="beer-style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a1 1 0 0 0-1 1v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1z"/><path d="M16 4h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2"/><path d="M6 6h1"/></svg><div class="beer-style">Американский ИПА</div></div>
+      <div class="beer-name">Hop<br>Hammer</div>
+      <div class="beer-desc">Взрывной цитрусовый хмель, тропические ноты и насыщенная горечь. Для настоящих любителей.</div>
+      <div class="beer-meta">
+        <div class="beer-abv">ABV 6.2% · IBU 65</div>
+        <div class="beer-price">850 ₸/л</div>
+      </div>
+    </div>
+    <div class="beer-card reveal" style="transition-delay:0.2s">
+      <div class="beer-num">03</div>
+      <div class="beer-style-wrap"><svg class="beer-style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a1 1 0 0 0-1 1v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1z"/><path d="M16 4h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2"/><path d="M6 6h1"/></svg><div class="beer-style">Пшеничное нефильтр.</div></div>
+      <div class="beer-name">Weiß<br>Nebel</div>
+      <div class="beer-desc">Облачно-мутное с банановыми эфирами и гвоздичной пряностью. Истинный немецкий Hefeweizen.</div>
+      <div class="beer-meta">
+        <div class="beer-abv">ABV 5.3% · IBU 12</div>
+        <div class="beer-price">760 ₸/л</div>
+      </div>
+    </div>
+    <div class="beer-card reveal" style="transition-delay:0.05s">
+      <div class="beer-num">04</div>
+      <div class="beer-style-wrap"><svg class="beer-style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a1 1 0 0 0-1 1v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1z"/><path d="M16 4h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2"/><path d="M6 6h1"/></svg><div class="beer-style">Молочный стаут</div></div>
+      <div class="beer-name">Dark<br>Velvet</div>
+      <div class="beer-desc">Кофе, шоколад, сливочная текстура. Мягкий и обволакивающий — идеален в холодный вечер.</div>
+      <div class="beer-meta">
+        <div class="beer-abv">ABV 5.7% · IBU 28</div>
+        <div class="beer-price">820 ₸/л</div>
+      </div>
+    </div>
+    <div class="beer-card reveal" style="transition-delay:0.15s">
+      <div class="beer-img" style="background-image:url(beer-yantarnyy-el-Photoroom.png)"></div>
+      <div class="beer-num">05</div>
+      <div class="beer-style-wrap"><svg class="beer-style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a1 1 0 0 0-1 1v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1z"/><path d="M16 4h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2"/><path d="M6 6h1"/></svg><div class="beer-style">Бельгийский эль</div></div>
+      <div class="beer-name">Abbaye<br>Dorée</div>
+      <div class="beer-desc">Фруктовые эфиры, пряные ноты, плотная пена. Вдохновлён традициями бельгийских монастырей.</div>
+      <div class="beer-meta">
+        <div class="beer-abv">ABV 7.1% · IBU 22</div>
+        <div class="beer-price">920 ₸/л</div>
+      </div>
+    </div>
+    <div class="beer-card reveal" style="transition-delay:0.25s">
+      <div class="beer-img" style="background-image:url(beer-limonnyy-vzryv-Photoroom.png)"></div>
+      <div class="beer-num">06</div>
+      <div class="beer-style-wrap"><svg class="beer-style-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2H7a1 1 0 0 0-1 1v15a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V3a1 1 0 0 0-1-1z"/><path d="M16 4h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2"/><path d="M6 6h1"/></svg><div class="beer-style">Безалкогольное</div></div>
+      <div class="beer-name">Zero<br>Gravity</div>
+      <div class="beer-desc">Полный вкус без алкоголя. Свежий хмель, зерновая основа и чистый финиш. Для любого момента.</div>
+      <div class="beer-meta">
+        <div class="beer-abv">ABV 0.5% · IBU 15</div>
+        <div class="beer-price">540 ₸/л</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DELIVERY TRANSITION -->
+<div class="delivery-transition"></div>
+
+<!-- DELIVERY -->
+<div class="delivery-section" id="delivery">
+  <div class="delivery-grid">
+    <div class="delivery-left reveal">
+      <p class="label">Доставка</p>
+      <h2 class="section-title" style="color:var(--black)">Привезём прямо<br>к вашей двери</h2>
+      <p>Заказывайте любимые сорта не выходя из дома. Холодное, живое, в фирменных ёмкостях — доставляем быстро по всему Алматы.</p>
+      <div class="delivery-hours">
+        <div class="delivery-hours-icon">🕙</div>
+        <div class="delivery-hours-text">
+          <strong>10:00 — 00:00</strong>
+          <span>Ежедневно без выходных</span>
+        </div>
+        <div class="delivery-hours-icon" style="margin-left:auto;">
+          <a href="https://2gis.kz/almaty/firm/70000001086285055" target="_blank" title="Открыть на карте">📍</a>
+        </div>
+      </div>
+      <ul class="delivery-steps">
+        <li>
+          <span class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <span class="step-text">Напишите нам в WhatsApp — укажите сорт и количество</span>
+        </li>
+        <li>
+          <span class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+          <span class="step-text">Уточним адрес и время — курьер выедет в течение часа</span>
+        </li>
+        <li>
+          <span class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="step-text">Получите свежее пиво у порога — холодным и запечатанным</span>
+        </li>
+      </ul>
+      <a href="https://api.whatsapp.com/send/?phone=77471707717&text&type=phone_number&app_absent=0" target="_blank" class="btn-whatsapp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Заказать в WhatsApp
+      </a>
+    </div>
+    <div class="delivery-right reveal">
+      <div class="delivery-big">ДОСТАВКА<br>ПО АЛА</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="reviews-header reveal">
+    <p class="label">Отзывы</p>
+    <h2 class="section-title">Отзывы<br>наших<br>покупателей</h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p class="review-text">«Очень радует ассортимент — от классики до интересных новинок. Всегда есть из чего выбрать, и персонал всегда подскажет.»</p>
+      <div class="review-author">
+        <div class="review-author-avatar">И</div>
+        <div>
+          <div class="review-author-name">Игорь Кулешов</div>
+          <div class="review-source">2ГИС · 3 отзыва</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.08s">
+      <div class="review-stars">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p class="review-text">«Отличное место! Широкий выбор на любой вкус — сидр, медовуха, пиво (даже тёмного много разного). Персонал всегда на позитиве!»</p>
+      <div class="review-author">
+        <div class="review-author-avatar">Д</div>
+        <div>
+          <div class="review-author-name">Даниил Брусницын</div>
+          <div class="review-source">2ГИС · 1 отзыв</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.16s">
+      <div class="review-stars">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p class="review-text">«Более 50 видов пива, и всегда свежее. Фирменное пиво просто шикарное! Рыбка порадовала — всё на высшем уровне, обслуживание топ.»</p>
+      <div class="review-author">
+        <div class="review-author-avatar">К</div>
+        <div>
+          <div class="review-author-name">Кристина Фоминых</div>
+          <div class="review-source">2ГИС · 1 отзыв</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.04s">
+      <div class="review-stars">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p class="review-text">«Просто самое лучшее пиво! Выбор огромный — глаза разбегаются. Продавцы так вкусно рассказывают про каждый сорт, что хочется попробовать всё.»</p>
+      <div class="review-author">
+        <div class="review-author-avatar">М</div>
+        <div>
+          <div class="review-author-name">Margarita Izbassarova</div>
+          <div class="review-source">2ГИС · 11 отзывов</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.12s">
+      <div class="review-stars">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p class="review-text">«Большой выбор напитков на любой вкус, всегда свежая продукция и приятные цены. Персонал вежливый, помогает с выбором. Обязательно вернусь!»</p>
+      <div class="review-author">
+        <div class="review-author-avatar">R</div>
+        <div>
+          <div class="review-author-name">Rumit</div>
+          <div class="review-source">2ГИС · 1 отзыв</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal" style="transition-delay:0.2s">
+      <div class="review-stars">
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="review-star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p class="review-text">«Бухлавка — один из самых необычных магазинов. Всегда всё свежее, цены адекватные, персонал приветливый. Всем довольна, советую!»</p>
+      <div class="review-author">
+        <div class="review-author-avatar">А</div>
+        <div>
+          <div class="review-author-name">Аля Аксёнова</div>
+          <div class="review-source">2ГИС · 21 отзыв</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why-section" id="why">
+  <div class="why-left">
+    <p class="label reveal">Почему мы</p>
+    <h2 class="section-title reveal">Разница<br>в деталях</h2>
+    <ul class="why-list">
+      <li class="why-item">
+        <span class="why-num">01</span>
+        <div>
+          <div class="why-title">Прямо с пивоварни</div>
+          <p class="why-text">Мы забираем пиво сами, сохраняя непрерывную холодовую цепочку от производства до вашего стакана.</p>
+        </div>
+      </li>
+      <li class="why-item">
+        <span class="why-num">02</span>
+        <div>
+          <div class="why-title">Ежедневная чистка</div>
+          <p class="why-text">Краны и линии промываются каждое утро. Никакого привкуса трубок — только чистый вкус пива.</p>
+        </div>
+      </li>
+      <li class="why-item">
+        <span class="why-num">03</span>
+        <div>
+          <div class="why-title">Честные составы</div>
+          <p class="why-text">На каждом кране — карточка с реальными данными: пивоварня, дата розлива, ABV, IBU и описание.</p>
+        </div>
+      </li>
+      <li class="why-item">
+        <span class="why-num">04</span>
+        <div>
+          <div class="why-title">Обновляем регулярно</div>
+          <p class="why-text">Ротация ассортимента раз в 2–3 недели. Всегда есть что-то новое — и всегда есть проверенная классика.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="why-image-block reveal">
+    <div class="why-big-text">ПИВО<br>ЖИВОЕ</div>
+    <blockquote class="why-quote">«Хорошее пиво не нуждается в рекламе. Оно говорит само за себя — вкусом, ароматом и тем, как вы будете улыбаться после первого глотка.»</blockquote>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="map-section" id="map">
+  <div class="map-header reveal">
+    <p class="label">Как нас найти</p>
+    <h2 class="section-title">Мы на карте</h2>
+  </div>
+  <iframe
+    class="map-embed"
+    src="https://yandex.kz/map-widget/v1/-/CPsTfZ6O?lang=ru_RU"
+    allowfullscreen
+    loading="lazy"
+    title="Бухлавка на Яндекс Картах">
+  </iframe>
+  <div class="map-info-strip">
+    <div class="map-addr">
+      <strong>Толе Би, 165 — Алматы</strong>
+      Работаем ежедневно с 10:00 до 0:00
+    </div>
+    <a href="https://yandex.kz/maps/-/CPsTfZ6O" target="_blank" class="map-open-link">Открыть в Яндекс Картах →</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-strip" id="contact">
+  <h2 class="cta-strip-title reveal">Заходите.<br>Первый бокал<br>за нами. 🍺</h2>
+  <a href="https://api.whatsapp.com/send/?phone=77471707717&text&type=phone_number&app_absent=0" target="_blank" class="btn-whatsapp reveal">Написать в WhatsApp</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">БУХЛАВКА</div>
+      <div class="footer-tagline">Разливное пиво в Алматы.<br>Живое. Свежее. Настоящее.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Адрес и часы</h4>
+      <p>Толе Би, 165<br>Алматы, Казахстан</p>
+      <p style="margin-top:12px;">Работаем ежедневно<br>с 10:00 до 0:00</p>
+    </div>
+    <div class="footer-col">
+      <h4>Контакты</h4>
+      <a href="tel:+77471707717">+7‒747‒170‒77‒17</a>
+      <a href="https://www.instagram.com/buhlavka.drinks/" target="_blank">Instagram</a>
+      <a href="https://api.whatsapp.com/send/?phone=77471707717&text&type=phone_number&app_absent=0" target="_blank">WhatsApp</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 БУХЛАВКА. Все права защищены.</div>
+    <div class="footer-age">18+</div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .why-item').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
